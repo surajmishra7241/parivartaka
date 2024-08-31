@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.17.1",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-clipboard/clipboard": "^1.14.1",
     "@react-native-community/datetimepicker": "^7.6.4",
@@ -20,6 +21,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "axios": "^1.6.8",
+    "buffer": "^6.0.3",
     "metro-react-native-babel-preset": "^0.77.0",
     "react": "18.2.0",
     "react-native": "^0.73.6",
@@ -36,6 +38,7 @@
     "react-native-google-places-autocomplete": "^2.5.6",
     "react-native-image-crop-picker": "^0.40.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.15.1",
     "react-native-maps-directions": "^1.9.0",
     "react-native-material-bottom-navigation": "^1.0.5",

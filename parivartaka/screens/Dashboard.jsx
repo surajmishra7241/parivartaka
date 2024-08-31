@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React, { useState ,useEffect} from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList,LogBox, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { useIsFocused } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 const cardData = [
@@ -11,28 +11,41 @@ const cardData = [
         subtitle: 'Solve Your PDF Problems',
         icon: 'file-pdf-o',
         color: '#5DADE2',
+        screen: 'ObjectIdentifier'
     },
     {
         id: '2',
+        title: 'Object Identifier',
+        subtitle: 'Video Editing and More',
+        icon: 'search',
+        color: '#F7DC6F',
+        screen: 'ObjectIdentifier'
+    },
+    {
+        id: '3',
         title: 'Image Tools',
         subtitle: 'Edit and Enhance Images',
         icon: 'image',
         color: '#F1948A',
+        screen: 'ObjectIdentifier'
     },
     {
-        id: '3',
+        id: '4',
         title: 'AI Tools',
         subtitle: 'AI-Powered Solutions',
         icon: 'magic',
         color: '#82E0AA',
+        screen: 'ObjectIdentifier'
     },
     {
-        id: '4',
+        id: '5',
         title: 'Video Tools',
         subtitle: 'Video Editing and More',
         icon: 'video-camera',
         color: '#F7DC6F',
-    },
+        screen: 'ObjectIdentifier'
+    }
+
     // Add more cards if needed
 ];
 
@@ -103,7 +116,12 @@ const toolCardData = [
 ];
 
 
-const Dashboard = () => {
+const Dashboard = ({ navigation }) => {
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+    }, [isFocused]);
+
     const [showAllTools, setShowAllTools] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const initialTools = toolCardData.slice(0, 6);
@@ -117,7 +135,7 @@ const Dashboard = () => {
             <Icon name={item.icon} size={50} color="#ffffff" style={styles.cardIcon} />
             <Text style={styles.cardTitle}>{item.title}</Text>
             <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate(item.screen)}>
                 <Text style={styles.cardLink}>Explore</Text>
             </TouchableOpacity>
         </View>
@@ -138,7 +156,7 @@ const Dashboard = () => {
                 <TouchableOpacity style={styles.iconContainer}>
                     <Icon name="search" size={24} style={styles.icon} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>TinyWow</Text>
+                <Text style={styles.headerTitle}>Parivartaka</Text>
                 <TouchableOpacity style={styles.iconContainer}>
                     <Icon name="bars" size={24} style={styles.icon} />
                 </TouchableOpacity>
@@ -470,10 +488,10 @@ const responsiveStyles = StyleSheet.create({
         paddingBottom: 30,
     },
     toolCard: {
-       width: width * 0.44,
+        width: width * 0.44,
         padding: 15,
         marginVertical: 10,
-        marginHorizontal:5,
+        marginHorizontal: 5,
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
@@ -501,7 +519,7 @@ const responsiveStyles = StyleSheet.create({
     columnWrapper: {
         justifyContent: 'space-between',
     },
-   allToolsButton: {
+    allToolsButton: {
         backgroundColor: '#007bff',
         paddingVertical: 15,
         paddingHorizontal: 20,
