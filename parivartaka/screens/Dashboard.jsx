@@ -107,7 +107,7 @@ const popularToolsData = [
 const toolCardData = [
     { id: '1', title: 'Essay Writer', subtitle: 'AI Write', icon: 'file-text-o', color: '#F7DC6F', screen: 'EassyWriting' },
     { id: '2', title: 'Content Improver', subtitle: 'AI Write', icon: 'edit', color: '#AED6F1', screen: 'EassyWriting' },
-    { id: '3', title: 'Paragraph Writer', subtitle: 'AI Write', icon: 'paragraph', color: '#F5B7B1' , screen: 'EassyWriting'},
+    { id: '3', title: 'Paragraph Writer', subtitle: 'AI Write', icon: 'paragraph', color: '#F5B7B1' , screen: 'ParagraphWriting'},
     { id: '4', title: 'AI Image Generator', subtitle: 'Image Tools', icon: 'picture-o', color: '#F9E79F', screen: 'EassyWriting' },
     { id: '5', title: 'Remove Background', subtitle: 'Image Tools', icon: 'scissors', color: '#A3E4D7', screen: 'EassyWriting' },
     { id: '6', title: 'Merge PDF', subtitle: 'PDF Tools', icon: 'files-o', color: '#D2B4DE', screen: 'EassyWriting' },

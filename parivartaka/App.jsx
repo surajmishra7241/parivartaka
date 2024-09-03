@@ -6,6 +6,7 @@ import Base64Converter from './screens/Base64Converter';
 import ObjectIdentificationScreen from './screens/ObjectIdentifier';
 import ResumeTailorScreen from './screens/Tools/ResumeTailoring';
 import EassyWriting from './screens/Tools/EassyWriting';
+import ParagraphWriting from './screens/Tools/ParagraphWriting';
 // Import other converters
 
 const Stack = createNativeStackNavigator();
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name="ObjectIdentifier" component={ObjectIdentificationScreen} />
         <Stack.Screen name="ResumeTailoringScreen" component={ResumeTailorScreen} />
         <Stack.Screen name="EassyWriting" component={EassyWriting} />
+        <Stack.Screen name="ParagraphWriting" component={ParagraphWriting} />
         {/* Add other converters here */}
       </Stack.Navigator>
     </NavigationContainer>
