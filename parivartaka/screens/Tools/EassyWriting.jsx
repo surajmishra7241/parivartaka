@@ -1,25 +1,28 @@
 // App.js
 import React, { useState } from 'react';
 import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ScrollView,
-  SafeAreaView,
-  ActivityIndicator,
-  Clipboard,
-  ToastAndroid,
-  Platform,
-  Alert,
-  PermissionsAndroid
+    View, 
+    Text, 
+    TextInput, 
+    TouchableOpacity, 
+    StyleSheet, 
+    ScrollView,
+    SafeAreaView,
+    ActivityIndicator,
+    Clipboard,
+    ToastAndroid,
+    Platform,
+    Alert,
+    PermissionsAndroid,
+    StatusBar,
+    Dimensions
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
+import LinearGradient from 'react-native-linear-gradient';
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI('AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw');
@@ -150,83 +153,98 @@ const EassyWriting = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>AI Essay Writer</Text>
-        
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Essay Topic</Text>
-          <TextInput
-            style={styles.input}
-            value={topic}
-            onChangeText={setTopic}
-            placeholder="Enter essay topic"
-          />
-        </View>
+      <StatusBar barStyle="light-content" />
+      <LinearGradient
+        colors={['#4c669f', '#3b5998', '#192f6a']}
+        style={styles.gradient}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.title}>AI Essay Writer</Text>
+          
+          <View style={styles.card}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Essay Topic</Text>
+              <TextInput
+                style={styles.input}
+                value={topic}
+                onChangeText={setTopic}
+                placeholder="Enter essay topic"
+                placeholderTextColor="#A0AEC0"
+              />
+            </View>
 
-        <View style={styles.dropdownContainer}>
-          <View style={styles.dropdownWrapper}>
-            <Text style={styles.label}>Word Count</Text>
-            <Dropdown
-              style={styles.dropdown}
-              data={wordCountOptions}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Select word count"
-              value={wordCount}
-              onChange={item => setWordCount(item.value)}
-            />
-          </View>
+            <View style={styles.dropdownContainer}>
+              <View style={styles.dropdownWrapper}>
+                <Text style={styles.label}>Word Count</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  data={wordCountOptions}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select word count"
+                  value={wordCount}
+                  onChange={item => setWordCount(item.value)}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                />
+              </View>
 
-          <View style={styles.dropdownWrapper}>
-            <Text style={styles.label}>Education Level</Text>
-            <Dropdown
-              style={styles.dropdown}
-              data={educationLevelOptions}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Select education level"
-              value={educationLevel}
-              onChange={item => setEducationLevel(item.value)}
-            />
-          </View>
-        </View>
+              <View style={styles.dropdownWrapper}>
+                <Text style={styles.label}>Education Level</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  data={educationLevelOptions}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select education level"
+                  value={educationLevel}
+                  onChange={item => setEducationLevel(item.value)}
+                  placeholderStyle={styles.dropdownPlaceholder}
+                  selectedTextStyle={styles.dropdownSelectedText}
+                />
+              </View>
+            </View>
 
-        <TouchableOpacity style={styles.generateButton} onPress={generateEssay} disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <>
-              <Text style={styles.buttonText}>Generate Essay</Text>
-              <Icon name="pencil" size={24} color="#FFFFFF" />
-            </>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.outputContainer}>
-          <View style={styles.outputHeader}>
-            <Text style={styles.label}>Generated Essay</Text>
-            <TouchableOpacity onPress={copyEssay} style={styles.copyButton}>
-              <Icon name="content-copy" size={24} color="#3498DB" />
+            <TouchableOpacity style={styles.generateButton} onPress={generateEssay} disabled={isLoading}>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Text style={styles.buttonText}>Generate Essay</Text>
+                  <Icon name="pencil" size={24} color="#FFFFFF" />
+                </>
+              )}
             </TouchableOpacity>
           </View>
-          <TextInput
-            style={styles.essayOutput}
-            value={essayContent}
-            onChangeText={setEssayContent}
-            multiline
-            numberOfLines={10}
-            editable
-            textAlignVertical="top"
-          />
-        </View>
 
-        <TouchableOpacity style={styles.downloadButton} onPress={downloadEssay}>
-          <Text style={styles.buttonText}>Download Essay</Text>
-          <Icon name="download" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </ScrollView>
+          <View style={styles.card}>
+            <View style={styles.outputHeader}>
+              <Text style={styles.label}>Generated Essay</Text>
+              <TouchableOpacity onPress={copyEssay} style={styles.copyButton}>
+                <Icon name="content-copy" size={24} color="#4c669f" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.essayOutput}
+              value={essayContent}
+              onChangeText={setEssayContent}
+              multiline
+              numberOfLines={10}
+              editable
+              textAlignVertical="top"
+              placeholder="Your generated essay will appear here..."
+              placeholderTextColor="#A0AEC0"
+            />
+          </View>
+
+          <TouchableOpacity style={styles.downloadButton} onPress={downloadEssay}>
+            <Text style={styles.buttonText}>Download Essay</Text>
+            <Icon name="download" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -234,17 +252,34 @@ const EassyWriting = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F0F4F8',
+    backgroundColor: '#4c669f',
+  },
+  gradient: {
+    flex: 1,
   },
   scrollContent: {
     padding: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#2C3E50',
+    color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   inputContainer: {
     marginBottom: 20,
@@ -252,16 +287,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#34495E',
+    color: '#4A5568',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EDF2F7',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#BDC3C7',
+    color: '#2D3748',
   },
   dropdownContainer: {
     flexDirection: 'row',
@@ -273,29 +307,29 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   dropdown: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EDF2F7',
     borderRadius: 8,
     padding: 12,
-    borderWidth: 1,
-    borderColor: '#BDC3C7',
+  },
+  dropdownPlaceholder: {
+    color: '#A0AEC0',
+  },
+  dropdownSelectedText: {
+    color: '#2D3748',
   },
   generateButton: {
-    backgroundColor: '#3498DB',
+    backgroundColor: '#4c669f',
     borderRadius: 8,
     padding: 15,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
     marginRight: 10,
-  },
-  outputContainer: {
-    marginBottom: 20,
   },
   outputHeader: {
     flexDirection: 'row',
@@ -307,23 +341,22 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   essayOutput: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EDF2F7',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#BDC3C7',
+    color: '#2D3748',
     minHeight: 200,
     textAlignVertical: 'top',
   },
   downloadButton: {
-    backgroundColor: '#2ECC71',
+    backgroundColor: '#38A169',
     borderRadius: 8,
     padding: 15,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
   },
 });
-
 export default EassyWriting;
