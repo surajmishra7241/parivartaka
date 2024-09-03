@@ -7,16 +7,16 @@ const { width } = Dimensions.get('window');
 const cardData = [
     {
         id: '1',
-        title: 'PDF Tools',
-        subtitle: 'Solve Your PDF Problems',
+        title: 'Tailer Resume',
+        subtitle: 'Solve Your Resume Problems',
         icon: 'file-pdf-o',
         color: '#5DADE2',
-        screen: 'ObjectIdentifier'
+        screen: 'ResumeTailoringScreen'
     },
     {
         id: '2',
         title: 'Object Identifier',
-        subtitle: 'Video Editing and More',
+        subtitle: 'Identify any object and More',
         icon: 'search',
         color: '#F7DC6F',
         screen: 'ObjectIdentifier'
@@ -44,6 +44,14 @@ const cardData = [
         icon: 'video-camera',
         color: '#F7DC6F',
         screen: 'ObjectIdentifier'
+    },
+    {
+        id: '6',
+        title: 'PDF Tools',
+        subtitle: 'Solve Your PDF Problems',
+        icon: 'file-pdf-o',
+        color: '#5DADE2',
+        screen: 'ResumeTailoringScreen'
     }
 
     // Add more cards if needed
@@ -97,21 +105,21 @@ const popularToolsData = [
 
 
 const toolCardData = [
-    { id: '1', title: 'Essay Writer', subtitle: 'AI Write', icon: 'file-text-o', color: '#F7DC6F' },
-    { id: '2', title: 'Content Improver', subtitle: 'AI Write', icon: 'edit', color: '#AED6F1' },
-    { id: '3', title: 'Paragraph Writer', subtitle: 'AI Write', icon: 'paragraph', color: '#F5B7B1' },
-    { id: '4', title: 'AI Image Generator', subtitle: 'Image Tools', icon: 'picture-o', color: '#F9E79F' },
-    { id: '5', title: 'Remove Background', subtitle: 'Image Tools', icon: 'scissors', color: '#A3E4D7' },
-    { id: '6', title: 'Merge PDF', subtitle: 'PDF Tools', icon: 'files-o', color: '#D2B4DE' },
-    { id: '7', title: 'Edit PDF', subtitle: 'PDF Tools', icon: 'file-pdf-o', color: '#A9CCE3' },
-    { id: '8', title: 'PDF to JPG', subtitle: 'PDF Tools', icon: 'file-image-o', color: '#F1948A' },
-    { id: '9', title: 'AI Translator', subtitle: 'AI Tools', icon: 'language', color: '#7FB3D5' },
-    { id: '10', title: 'Video Compressor', subtitle: 'Video Tools', icon: 'compress', color: '#FAD7A0' },
-    { id: '11', title: 'GIF Maker', subtitle: 'Image Tools', icon: 'film', color: '#F5CBA7' },
-    { id: '12', title: 'Text Summarizer', subtitle: 'AI Tools', icon: 'align-left', color: '#D7BDE2' },
-    { id: '13', title: 'QR Code Generator', subtitle: 'Tools', icon: 'qrcode', color: '#F5B041' },
-    { id: '14', title: 'SEO Optimizer', subtitle: 'AI Tools', icon: 'line-chart', color: '#85C1E9' },
-    { id: '15', title: 'Social Media Post Maker', subtitle: 'Image Tools', icon: 'share-alt', color: '#F7C6C7' },
+    { id: '1', title: 'Essay Writer', subtitle: 'AI Write', icon: 'file-text-o', color: '#F7DC6F', screen: 'EassyWriting' },
+    { id: '2', title: 'Content Improver', subtitle: 'AI Write', icon: 'edit', color: '#AED6F1', screen: 'EassyWriting' },
+    { id: '3', title: 'Paragraph Writer', subtitle: 'AI Write', icon: 'paragraph', color: '#F5B7B1' , screen: 'EassyWriting'},
+    { id: '4', title: 'AI Image Generator', subtitle: 'Image Tools', icon: 'picture-o', color: '#F9E79F', screen: 'EassyWriting' },
+    { id: '5', title: 'Remove Background', subtitle: 'Image Tools', icon: 'scissors', color: '#A3E4D7', screen: 'EassyWriting' },
+    { id: '6', title: 'Merge PDF', subtitle: 'PDF Tools', icon: 'files-o', color: '#D2B4DE', screen: 'EassyWriting' },
+    { id: '7', title: 'Edit PDF', subtitle: 'PDF Tools', icon: 'file-pdf-o', color: '#A9CCE3', screen: 'EassyWriting' },
+    { id: '8', title: 'PDF to JPG', subtitle: 'PDF Tools', icon: 'file-image-o', color: '#F1948A', screen: 'EassyWriting' },
+    { id: '9', title: 'AI Translator', subtitle: 'AI Tools', icon: 'language', color: '#7FB3D5' , screen: 'EassyWriting'},
+    { id: '10', title: 'Video Compressor', subtitle: 'Video Tools', icon: 'compress', color: '#FAD7A0' , screen: 'EassyWriting'},
+    { id: '11', title: 'GIF Maker', subtitle: 'Image Tools', icon: 'film', color: '#F5CBA7' , screen: 'EassyWriting'},
+    { id: '12', title: 'Text Summarizer', subtitle: 'AI Tools', icon: 'align-left', color: '#D7BDE2' , screen: 'EassyWriting'},
+    { id: '13', title: 'QR Code Generator', subtitle: 'Tools', icon: 'qrcode', color: '#F5B041', screen: 'EassyWriting' },
+    { id: '14', title: 'SEO Optimizer', subtitle: 'AI Tools', icon: 'line-chart', color: '#85C1E9' , screen: 'EassyWriting'},
+    { id: '15', title: 'Social Media Post Maker', subtitle: 'Image Tools', icon: 'share-alt', color: '#F7C6C7' , screen: 'EassyWriting'},
     // Add more cards as needed
 ];
 
@@ -142,11 +150,11 @@ const Dashboard = ({ navigation }) => {
     );
 
     const renderToolCard = ({ item }) => (
-        <View style={[responsiveStyles.toolCard, { backgroundColor: item.color }]}>
+        <TouchableOpacity style={[responsiveStyles.toolCard, { backgroundColor: item.color }]} onPress={e=>navigation.navigate(item.screen)}>
             <Icon name={item.icon} size={28} color="#ffffff" style={responsiveStyles.toolCardIcon} />
             <Text style={responsiveStyles.toolCardTitle}>{item.title}</Text>
             <Text style={responsiveStyles.toolCardSubtitle}>{item.subtitle}</Text>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
