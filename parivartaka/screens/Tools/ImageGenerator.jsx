@@ -14,7 +14,7 @@ import {
   Platform,
   Alert
 } from 'react-native';
-import { OPENAI_API_KEY, OPENAI_API_URL } from '@env';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';

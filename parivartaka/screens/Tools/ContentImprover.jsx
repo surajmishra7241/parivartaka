@@ -22,11 +22,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import LinearGradient from 'react-native-linear-gradient';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 
 const { width } = Dimensions.get('window');
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI('AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw');
+const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const ContentImprover = () => {
   const [originalContent, setOriginalContent] = useState('');

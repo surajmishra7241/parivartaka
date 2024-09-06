@@ -5,9 +5,9 @@ import Voice from '@react-native-voice/voice';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Dropdown } from 'react-native-element-dropdown';
 import LinearGradient from 'react-native-linear-gradient';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 
-
-const genAI = new GoogleGenerativeAI('AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw');
+const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const languages = [
     { label: 'English', value: 'en', flag: '🇬🇧' },

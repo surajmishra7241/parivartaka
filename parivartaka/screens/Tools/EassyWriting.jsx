@@ -17,6 +17,7 @@ import {
     StatusBar,
     Dimensions
 } from 'react-native';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 import { Dropdown } from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -25,7 +26,7 @@ import Share from 'react-native-share';
 import LinearGradient from 'react-native-linear-gradient';
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI('AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw');
+const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const EassyWriting = () => {
   const [topic, setTopic] = useState('');

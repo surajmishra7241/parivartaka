@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import axios from 'axios';
-
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 // Simulate Generative AI background selection
 const simulateGenerativeAIImage = (type) => {
   switch (type) {

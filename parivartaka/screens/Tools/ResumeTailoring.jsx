@@ -15,8 +15,9 @@ import DocumentPicker from 'react-native-document-picker';
 import { LineChart } from 'react-native-chart-kit';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 
-const API_KEY = 'AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw'; // Replace with your actual Gemini API key
+const API_KEY = GENAI_API_KEY; // Replace with your actual Gemini API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const ResumeTailoringScreen = () => {

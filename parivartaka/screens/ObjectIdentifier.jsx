@@ -5,8 +5,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import RNFS from 'react-native-fs';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
 
-const genAI = new GoogleGenerativeAI('AIzaSyA1jkVXDoTzbVn6cJHDNHGXeI55MtbNufw');
+const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const { width } = Dimensions.get('window');
 
