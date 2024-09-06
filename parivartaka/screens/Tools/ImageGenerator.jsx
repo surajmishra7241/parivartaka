@@ -21,8 +21,8 @@ import RNFS from 'react-native-fs';
 
 const { width } = Dimensions.get('window');
 
-const OPENAI_API_KEY = 'sk-UJzznhkPiqPjcl0NToo7kGNry4vAbz5XjfXjcUD6ZLT3BlbkFJfmLDHb6U0OWFuseESX4v2dtYVsOzFDBbeio9e7AboA'; // Replace with your actual API key
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
+// const OPENAI_API_KEY = 'sk-UJzznhkPiqPjcl0NToo7kGNry4vAbz5XjfXjcUD6ZLT3BlbkFJfmLDHb6U0OWFuseESX4v2dtYVsOzFDBbeio9e7AboA'; // Replace with your actual API key
+// const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 
 const ImageGeneratorDashboard = () => {
     const [prompt, setPrompt] = useState('');
