@@ -7,6 +7,10 @@ import ObjectIdentificationScreen from './screens/ObjectIdentifier';
 import ResumeTailorScreen from './screens/Tools/ResumeTailoring';
 import EassyWriting from './screens/Tools/EassyWriting';
 import ParagraphWriting from './screens/Tools/ParagraphWriting';
+import ContentImprover from './screens/Tools/ContentImprover';
+import ImageGeneratorDashboard from './screens/Tools/ImageGenerator';
+import AiTranslator from './screens/Tools/AiTranslator';
+import QRGenerator from './screens/Tools/QRGenerator';
 // Import other converters
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +28,10 @@ export default function App() {
         <Stack.Screen name="ResumeTailoringScreen" component={ResumeTailorScreen} />
         <Stack.Screen name="EassyWriting" component={EassyWriting} />
         <Stack.Screen name="ParagraphWriting" component={ParagraphWriting} />
+        <Stack.Screen name="ContentImprover" component={ContentImprover} />
+        <Stack.Screen name="ImageGeneratorDashboard" component={ImageGeneratorDashboard} />
+        <Stack.Screen name="AiTranslator" component={AiTranslator} />
+        <Stack.Screen name="QRGenerator" component={QRGenerator} />
         {/* Add other converters here */}
       </Stack.Navigator>
     </NavigationContainer>
