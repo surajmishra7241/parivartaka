@@ -13,6 +13,7 @@
     "@google/generative-ai": "^0.17.1",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-clipboard/clipboard": "^1.14.1",
+    "@react-native-community/blur": "^4.4.1",
     "@react-native-community/datetimepicker": "^7.6.4",
     "@react-native-community/geolocation": "^3.2.1",
     "@react-native-community/masked-view": "^0.1.11",

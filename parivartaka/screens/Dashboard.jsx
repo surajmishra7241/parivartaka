@@ -120,8 +120,12 @@ const toolCardData = [
     { id: '13', title: 'QR Code Generator', subtitle: 'Tools', icon: 'qrcode', color: '#F5B041', screen: 'QRGenerator' },
     { id: '14', title: 'SEO Optimizer', subtitle: 'AI Tools', icon: 'line-chart', color: '#85C1E9' , screen: 'EassyWriting'},
     { id: '15', title: 'Social Media Post Maker', subtitle: 'Image Tools', icon: 'share-alt', color: '#F7C6C7' , screen: 'EassyWriting'},
-    { id: '16', title: 'YouTube Transcript', subtitle: 'YouTube Transcript', icon: 'youtube', color: '#F7C6C7' , screen: 'YouTubeTranscriptGenerator'},
-    { id: '16', title: 'Interview Assistant', subtitle: 'Interview Assistant', icon: 'user', color: '#A9CCE3' , screen: 'InterviewAssistant'},
+    { id: '16', title: 'YouTube Transcript', subtitle: 'YouTube Transcript', icon: 'youtube', color: '#D7BDE2' , screen: 'YouTubeTranscriptGenerator'},
+    { id: '17', title: 'Interview Assistant', subtitle: 'Interview Assistant', icon: 'user', color: '#A9CCE3' , screen: 'InterviewAssistant'},
+    { id: '18', title: 'Meeting Summary', subtitle: 'Meeting Summary', icon: 'meetup', color: '#F7DC6F' , screen: 'MeetingSummary'},
+    { id: '19', title: 'Email Assistant', subtitle: 'Interview Assistant', icon: 'envelope-o', color: '#F1948A' , screen: 'EmailAssistant'},
+    { id: '20', title: 'Note Taking', subtitle: 'Note Taking', icon: 'sticky-note-o', color: '#A3E4D7' , screen: 'NoteTaking'},
+    { id: '21', title: 'Chat Bot', subtitle: 'Chat Bot', icon: 'wechat', color: '#E6D0B3' , screen: 'Chatbot'},
     // Add more cards as needed
 ];
 

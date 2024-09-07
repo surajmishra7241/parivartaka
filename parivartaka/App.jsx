@@ -14,6 +14,10 @@ import QRGenerator from './screens/Tools/QRGenerator';
 import YouTubeTranscriptGenerator from './screens/Tools/YouTubeTranscript';
 import TextSummarizer from './screens/Tools/TextSummarizer';
 import InterviewAssistant from './screens/Tools/InterviewAssistent';
+import MeetingSummary from './screens/Tools/MeetingSummary';
+import EmailAssistant from './screens/Tools/EmailAssistant';
+import NoteTaking from './screens/Tools/NoteTaking';
+import Chatbot from './screens/Tools/ChatBot';
 // Import other converters
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +42,10 @@ export default function App() {
         <Stack.Screen name="YouTubeTranscriptGenerator" component={YouTubeTranscriptGenerator} />
         <Stack.Screen name="TextSummarizer" component={TextSummarizer} />
         <Stack.Screen name="InterviewAssistant" component={InterviewAssistant} />
+        <Stack.Screen name="MeetingSummary" component={MeetingSummary} />
+        <Stack.Screen name="EmailAssistant" component={EmailAssistant} />
+        <Stack.Screen name="NoteTaking" component={NoteTaking} />
+        <Stack.Screen name="Chatbot" component={Chatbot} />
         {/* Add other converters here */}
       </Stack.Navigator>
     </NavigationContainer>
