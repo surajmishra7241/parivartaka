@@ -116,10 +116,12 @@ const toolCardData = [
     { id: '9', title: 'AI Translator', subtitle: 'AI Tools', icon: 'language', color: '#7FB3D5' , screen: 'AiTranslator'},
     { id: '10', title: 'Video Compressor', subtitle: 'Video Tools', icon: 'compress', color: '#FAD7A0' , screen: 'EassyWriting'},
     { id: '11', title: 'GIF Maker', subtitle: 'Image Tools', icon: 'film', color: '#F5CBA7' , screen: 'EassyWriting'},
-    { id: '12', title: 'Text Summarizer', subtitle: 'AI Tools', icon: 'align-left', color: '#D7BDE2' , screen: 'EassyWriting'},
+    { id: '12', title: 'Text Summarizer', subtitle: 'AI Tools', icon: 'align-left', color: '#D7BDE2' , screen: 'TextSummarizer'},
     { id: '13', title: 'QR Code Generator', subtitle: 'Tools', icon: 'qrcode', color: '#F5B041', screen: 'QRGenerator' },
     { id: '14', title: 'SEO Optimizer', subtitle: 'AI Tools', icon: 'line-chart', color: '#85C1E9' , screen: 'EassyWriting'},
     { id: '15', title: 'Social Media Post Maker', subtitle: 'Image Tools', icon: 'share-alt', color: '#F7C6C7' , screen: 'EassyWriting'},
+    { id: '16', title: 'YouTube Transcript', subtitle: 'YouTube Transcript', icon: 'youtube', color: '#F7C6C7' , screen: 'YouTubeTranscriptGenerator'},
+    { id: '16', title: 'Interview Assistant', subtitle: 'Interview Assistant', icon: 'user', color: '#A9CCE3' , screen: 'InterviewAssistant'},
     // Add more cards as needed
 ];
 

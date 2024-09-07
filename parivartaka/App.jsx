@@ -11,6 +11,9 @@ import ContentImprover from './screens/Tools/ContentImprover';
 import ImageGeneratorDashboard from './screens/Tools/ImageGenerator';
 import AiTranslator from './screens/Tools/AiTranslator';
 import QRGenerator from './screens/Tools/QRGenerator';
+import YouTubeTranscriptGenerator from './screens/Tools/YouTubeTranscript';
+import TextSummarizer from './screens/Tools/TextSummarizer';
+import InterviewAssistant from './screens/Tools/InterviewAssistent';
 // Import other converters
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +35,9 @@ export default function App() {
         <Stack.Screen name="ImageGeneratorDashboard" component={ImageGeneratorDashboard} />
         <Stack.Screen name="AiTranslator" component={AiTranslator} />
         <Stack.Screen name="QRGenerator" component={QRGenerator} />
+        <Stack.Screen name="YouTubeTranscriptGenerator" component={YouTubeTranscriptGenerator} />
+        <Stack.Screen name="TextSummarizer" component={TextSummarizer} />
+        <Stack.Screen name="InterviewAssistant" component={InterviewAssistant} />
         {/* Add other converters here */}
       </Stack.Navigator>
     </NavigationContainer>
