@@ -1,368 +1,438 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
   View,
   Text,
   TouchableOpacity,
-  FlatList,
-  Animated,
+  TextInput,
+  StyleSheet,
   Dimensions,
-  StatusBar,
-  Platform,
+  ScrollView,
+  SafeAreaView,
   ActivityIndicator,
-  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Voice from '@react-native-voice/voice';
+import { GENAI_API_KEY,OPENAI_API_KEY, OPENAI_API_URL} from '@env';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Dropdown } from 'react-native-element-dropdown';
-import LinearGradient from 'react-native-linear-gradient';
 import Tts from 'react-native-tts';
 
-import { GENAI_API_KEY } from '@env';
-
 const { width, height } = Dimensions.get('window');
+
+// Initialize Google Generative AI
 const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const AiTranslator = () => {
-  const [isListening, setIsListening] = useState(false);
-  const [chats, setChats] = useState([]);
-  const [sourceLanguage, setSourceLanguage] = useState('en');
-  const [targetLanguage, setTargetLanguage] = useState('es');
+  const [screen, setScreen] = useState('welcome');
+  const [sourceLanguage, setSourceLanguage] = useState('Italian');
+  const [targetLanguage, setTargetLanguage] = useState('English');
+  const [inputText, setInputText] = useState('');
+  const [translatedText, setTranslatedText] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-  const translateAnim = useRef(new Animated.Value(width)).current;
-  const flatListRef = useRef(null);
 
-  const languages = [
-    { label: 'English', value: 'en', flag: '🇬🇧' },
-    { label: 'Spanish', value: 'es', flag: '🇪🇸' },
-    { label: 'French', value: 'fr', flag: '🇫🇷' },
-    { label: 'German', value: 'de', flag: '🇩🇪' },
-    { label: 'Italian', value: 'it', flag: '🇮🇹' },
-    { label: 'Japanese', value: 'ja', flag: '🇯🇵' },
-    { label: 'Korean', value: 'ko', flag: '🇰🇷' },
-    { label: 'Chinese', value: 'zh', flag: '🇨🇳' },
-  ];
+  const languages = ['Italian', 'English', 'Spanish', 'French', 'German'];
 
   useEffect(() => {
-    Voice.onSpeechResults = onSpeechResults;
-    setupTts();
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
+    Tts.setDefaultLanguage('en-US');
+    Tts.setDefaultVoice('com.apple.ttsbundle.Samantha-compact');
   }, []);
 
-  useEffect(() => {
-    setupTts();
-  }, [sourceLanguage, targetLanguage]);
-
-  const setupTts = async () => {
-    await Tts.setDefaultLanguage(sourceLanguage);
-    await Tts.setDefaultVoice('com.apple.ttsbundle.Moira-compact');
+  const handleContinue = () => {
+    setScreen('translate');
   };
 
-  const onSpeechResults = useCallback((e) => {
-    translateText(e.value[0]);
-  }, [sourceLanguage, targetLanguage]);
-
-  const toggleListening = async () => {
-    try {
-      if (isListening) {
-        await Voice.stop();
-        setIsListening(false);
-      } else {
-        await Voice.start(sourceLanguage);
-        setIsListening(true);
-      }
-    } catch (e) {
-      console.error(e);
-      setError("Failed to start voice recognition. Please try again.");
-    }
-  };
-
-  const translateText = async (text) => {
+  const handleTranslate = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `Translate the following text from ${sourceLanguage} to ${targetLanguage}: "${text}"`;
+      const prompt = `Translate the following text from ${sourceLanguage} to ${targetLanguage}: "${inputText}"`;
       const result = await model.generateContent(prompt);
-      const translatedText = result.response.text();
-      const newChat = { 
-        id: Date.now().toString(), 
-        original: text, 
-        translated: translatedText, 
-        isUser: true 
-      };
-      setChats(prevChats => [...prevChats, newChat]);
-      animateNewMessage();
-      flatListRef.current?.scrollToEnd({ animated: true });
-    } catch (error) {
-      console.error('Translation error:', error);
-      setError("Failed to translate. Please try again.");
+      const response = await result.response;
+      const text = response.text();
+      setTranslatedText(text);
+    } catch (err) {
+      console.error('Translation error:', err);
+      setError('An error occurred while translating. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const speakText = (text, lang) => {
-    Tts.setDefaultLanguage(lang);
-    Tts.speak(text);
+  const toggleDropdown = (type) => {
+    setIsDropdownVisible(!isDropdownVisible);
+    setActiveDropdown(type);
   };
 
-  const animateNewMessage = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateAnim, {
-        toValue: 0,
-        friction: 8,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-    ]).start();
+  const selectLanguage = (language) => {
+    if (activeDropdown === 'source') {
+      setSourceLanguage(language);
+    } else {
+      setTargetLanguage(language);
+    }
+    setIsDropdownVisible(false);
   };
 
-  const deleteAllChats = () => {
-    Alert.alert(
-      "Delete All Chats",
-      "Are you sure you want to delete all chats?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Delete", onPress: () => setChats([]), style: "destructive" }
-      ]
-    );
+  const speakTranslatedText = () => {
+    Tts.speak(translatedText);
   };
 
-  const renderMessage = ({ item }) => (
-    <Animated.View 
-      style={[
-        styles.messageContainer, 
-        { 
-          opacity: fadeAnim,
-          transform: [{ translateX: translateAnim }],
-        }
-      ]}
-    >
-      <LinearGradient
-        colors={item.isUser ? ['#E1F5FE', '#B3E5FC'] : ['#B3E5FC', '#81D4FA']}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}
-        style={[styles.messageContent, item.isUser ? styles.userMessage : styles.aiMessage]}
-      >
-        <Text style={styles.messageText}>{item.original}</Text>
-        <Text style={styles.translatedText}>{item.translated}</Text>
-        <TouchableOpacity
-          style={styles.speakerButton}
-          onPress={() => speakText(item.translated, item.isUser ? targetLanguage : sourceLanguage)}
-        >
-          <Icon name="volume-high" size={24} color="#FF5252" />
-        </TouchableOpacity>
-      </LinearGradient>
-    </Animated.View>
+  const renderWelcomeScreen = () => (
+    <SafeAreaView style={styles.welcomeContainer}>
+      <Text style={styles.title}>Translator</Text>
+      <Text style={styles.subtitle}>Translate easy and fast into 100+ languages</Text>
+      <View style={styles.avatarContainer}>
+        <View style={styles.avatarBubble}>
+          <Text style={styles.avatarText}>Hola</Text>
+          <View style={[styles.avatar, styles.avatar1]} />
+        </View>
+        <View style={styles.avatarBubble}>
+          <Text style={styles.avatarText}>Hello</Text>
+          <View style={[styles.avatar, styles.avatar2]} />
+        </View>
+        <View style={styles.avatarBubble}>
+          <Text style={styles.avatarText}>Ciao</Text>
+          <View style={[styles.avatar, styles.avatar3]} />
+        </View>
+      </View>
+      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+        <Text style={styles.continueButtonText}>Continue</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 
-  const renderDropdownItem = (item) => (
-    <View style={styles.dropdownItem}>
-      <Text style={styles.dropdownFlag}>{item.flag}</Text>
-      <Text style={styles.dropdownLabel}>{item.label}</Text>
+  const renderTranslateScreen = () => (
+    <SafeAreaView style={styles.translateContainer}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <Text style={styles.headerTitle}>Translator</Text>
+          <View style={styles.card}>
+            <View style={styles.languageSelector}>
+              <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('source')}>
+                <Text style={styles.dropdownText}>{sourceLanguage}</Text>
+                <Icon name="arrow-drop-down" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter text"
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+            />
+          </View>
+          <View style={styles.card}>
+            <View style={styles.languageSelector}>
+              <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
+                <Text style={styles.dropdownText}>{targetLanguage}</Text>
+                <Icon name="arrow-drop-down" size={24} color="#333" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.speakerButton} onPress={speakTranslatedText}>
+                <Icon name="volume-up" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+            {isLoading ? (
+              <ActivityIndicator size="large" color="#333" />
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <Text style={styles.translatedText}>{translatedText}</Text>
+            )}
+          </View>
+          <TouchableOpacity style={styles.translateButton} onPress={handleTranslate}>
+            <Text style={styles.translateButtonText}>Translate</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      {renderBottomButtons('translate')}
+      {isDropdownVisible && (
+        <ScrollView style={styles.dropdownList}>
+          {languages.map((lang) => (
+            <TouchableOpacity key={lang} style={styles.dropdownItem} onPress={() => selectLanguage(lang)}>
+              <Text style={styles.dropdownItemText}>{lang}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+    </SafeAreaView>
+  );
+
+  const renderRecordScreen = () => (
+    <SafeAreaView style={styles.recordContainer}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <Text style={styles.headerTitle}>Translator</Text>
+          <View style={styles.card}>
+            <View style={styles.languageSelector}>
+              <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('source')}>
+                <Text style={styles.dropdownText}>{sourceLanguage}</Text>
+                <Icon name="arrow-drop-down" size={24} color="#333" />
+              </TouchableOpacity>
+              <Icon name="compare-arrows" size={24} color="#333" />
+              <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
+                <Text style={styles.dropdownText}>{targetLanguage}</Text>
+                <Icon name="arrow-drop-down" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.waveform}>
+            {/* Add waveform visualization here */}
+          </View>
+          <View style={[styles.card, styles.recordCard]}>
+            <Text style={styles.recordText}>Where are you from?</Text>
+            <TouchableOpacity style={styles.starButton}>
+              <Icon name="star-border" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      {renderBottomButtons('record')}
+      {isDropdownVisible && (
+        <ScrollView style={styles.dropdownList}>
+          {languages.map((lang) => (
+            <TouchableOpacity key={lang} style={styles.dropdownItem} onPress={() => selectLanguage(lang)}>
+              <Text style={styles.dropdownItemText}>{lang}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+    </SafeAreaView>
+  );
+
+  const renderBottomButtons = (activeScreen) => (
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={[styles.button, activeScreen === 'translate' && styles.activeButton]}
+        onPress={() => setScreen('translate')}
+      >
+        <Icon name="edit" size={24} color={activeScreen === 'translate' ? "#fff" : "#333"} />
+        <Text style={[styles.buttonText, activeScreen === 'translate' && styles.activeButtonText]}>Write</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.button, activeScreen === 'record' && styles.activeButton]}
+        onPress={() => setScreen('record')}
+      >
+        <Icon name="mic" size={24} color={activeScreen === 'record' ? "#fff" : "#333"} />
+        <Text style={[styles.buttonText, activeScreen === 'record' && styles.activeButtonText]}>Record</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}>
+        <Icon name="camera-alt" size={24} color="#333" />
+        <Text style={styles.buttonText}>Scan</Text>
+      </TouchableOpacity>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#4FC3F7" />
-      <LinearGradient colors={['#4FC3F7', '#29B6F6']} style={styles.header}>
-        <Dropdown
-          style={styles.dropdown}
-          containerStyle={styles.dropdownContainer}
-          data={languages}
-          labelField="label"
-          valueField="value"
-          value={sourceLanguage}
-          onChange={item => setSourceLanguage(item.value)}
-          placeholder="From"
-          renderItem={renderDropdownItem}
-          maxHeight={300}
-        />
-        <Icon name="swap-horizontal" size={24} color="#FFF" />
-        <Dropdown
-          style={styles.dropdown}
-          containerStyle={styles.dropdownContainer}
-          data={languages}
-          labelField="label"
-          valueField="value"
-          value={targetLanguage}
-          onChange={item => setTargetLanguage(item.value)}
-          placeholder="To"
-          renderItem={renderDropdownItem}
-          maxHeight={300}
-        />
-        <TouchableOpacity onPress={deleteAllChats} style={styles.deleteButton}>
-          <Icon name="delete" size={24} color="#FFF" />
-        </TouchableOpacity>
-      </LinearGradient>
-      {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      )}
-      <FlatList
-        ref={flatListRef}
-        data={chats}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.chatList}
-        contentContainerStyle={styles.chatListContent}
-      />
-      <View style={styles.footer}>
-        {isLoading ? (
-          <ActivityIndicator size="large" color="#FF5252" />
-        ) : (
-          <TouchableOpacity style={styles.micButton} onPress={toggleListening}>
-            <LinearGradient
-              colors={isListening ? ['#FF5252', '#FF1744'] : ['#FF7043', '#FF5722']}
-              style={styles.micButtonGradient}
-            >
-              <Icon name={isListening ? "stop" : "microphone"} size={32} color="#FFF" />
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {screen === 'welcome' && renderWelcomeScreen()}
+      {screen === 'translate' && renderTranslateScreen()}
+      {screen === 'record' && renderRecordScreen()}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: '#FFE600',
   },
-  header: {
+  welcomeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  translateContainer: {
+    flex: 1,
+  },
+  recordContainer: {
+    flex: 1,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    padding: 20,
+    paddingBottom: 100, // Add extra padding at the bottom for the button container
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#333',
+  },
+  avatarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 40,
+  },
+  avatarBubble: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginTop: 10,
+  },
+  avatar1: {
+    backgroundColor: '#8B4513',
+  },
+  avatar2: {
+    backgroundColor: '#FFD700',
+  },
+  avatar3: {
+    backgroundColor: '#A52A2A',
+  },
+  avatarText: {
+    fontSize: 16,
+    color: '#333',
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  continueButton: {
+    backgroundColor: '#333',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+  },
+  continueButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    elevation: 3,
+  },
+  languageSelector: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : 16,
+    marginBottom: 10,
   },
   dropdown: {
-    flex: 1,
-    height: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 12,
-    marginHorizontal: 8,
-    paddingHorizontal: 12,
-  },
-  dropdownContainer: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    marginTop: 8,
-  },
-  dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  dropdownFlag: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  dropdownLabel: {
-    fontSize: 16,
-    color: '#333',
-  },
-  deleteButton: {
-    marginLeft: 8,
-    padding: 8,
-  },
-  chatList: {
-    flex: 1,
-  },
-  chatListContent: {
-    padding: 16,
-  },
-  messageContainer: {
-    marginBottom: 16,
-  },
-  messageContent: {
+    backgroundColor: '#F0F0F0',
+    padding: 10,
     borderRadius: 20,
-    padding: 16,
-    minHeight: 60,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    minWidth: 120,
   },
-  userMessage: {
-    marginLeft: 40,
-    borderTopLeftRadius: 4,
-  },
-  aiMessage: {
-    marginRight: 40,
-    borderTopRightRadius: 4,
-  },
-  messageText: {
-    fontSize: 16,
+  dropdownText: {
     color: '#333',
-    marginBottom: 8,
+    marginRight: 5,
+  },
+  dropdownList: {
+    position: 'absolute',
+    top: 120,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    maxHeight: 200,
+    zIndex: 1,
+    elevation: 5,
+  },
+  dropdownItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  dropdownItemText: {
+    color: '#333',
+  },
+  input: {
+    minHeight: 100,
+    textAlignVertical: 'top',
   },
   translatedText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  speakerButton: {
-    position: 'absolute',
-    right: 8,
-    bottom: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 20,
-    padding: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  footer: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  micButton: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  micButtonGradient: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    backgroundColor: '#FFCDD2',
-    padding: 12,
-    margin: 16,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#D32F2F',
+    color: '#333',
+    minHeight: 100,
   },
   errorText: {
-    color: '#D32F2F',
-    fontSize: 14,
+    color: 'red',
+    textAlign: 'center',
+  },
+  speakerButton: {
+    padding: 10,
+  },
+  translateButton: {
+    backgroundColor: '#333',
+    paddingVertical: 15,
+    borderRadius: 25,
+    marginBottom: 20,
+  },
+  translateButtonText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#FFD700',
+    padding: 15,
+    borderRadius: 10,
+    minWidth: width / 4,
+  },
+  activeButton: {
+    backgroundColor: '#333',
+  },
+  buttonText: {
+    color: '#333',
+    marginTop: 5,
+  },
+  activeButtonText: {
+    color: '#fff',
+  },
+  waveform: {
+    height: 100,
+    backgroundColor: '#333',
+    marginBottom: 20,
+    borderRadius: 10,
+  },
+  recordText: {
+    fontSize: 24,
+    textAlign: 'center',
+    color: '#333',
+  },
+  recordCard: {
+    minHeight: 150,
   },
 });
 
