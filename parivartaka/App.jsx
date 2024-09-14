@@ -37,7 +37,7 @@ export default function App() {
         <Stack.Screen name="ParagraphWriting" component={ParagraphWriting} />
         <Stack.Screen name="ContentImprover" component={ContentImprover} />
         <Stack.Screen name="ImageGeneratorDashboard" component={ImageGeneratorDashboard} />
-        <Stack.Screen name="AiTranslator" component={AiTranslator} />
+        <Stack.Screen name="AiTranslator"  options={{ headerShown: false }} component={AiTranslator} />
         <Stack.Screen name="QRGenerator" component={QRGenerator} />
         <Stack.Screen name="YouTubeTranscriptGenerator" component={YouTubeTranscriptGenerator} />
         <Stack.Screen name="TextSummarizer" component={TextSummarizer} />
