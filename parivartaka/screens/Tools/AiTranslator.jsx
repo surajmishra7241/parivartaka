@@ -18,6 +18,7 @@ import {
     FlatList,
     Clipboard,
 } from 'react-native';
+import WelcomeScreen from './WelcomeScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GENAI_API_KEY, OPENAI_API_KEY, OPENAI_API_URL } from '@env';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -26,7 +27,9 @@ import Voice from '@react-native-voice/voice';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ModalMenu from './ModalMenu'; 
+import ModalMenu from './ModalMenu';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get('window');
 
 // Initialize Google Generative AI
@@ -34,8 +37,8 @@ const genAI = new GoogleGenerativeAI(GENAI_API_KEY);
 
 const AiTranslator = ({ navigation }) => {
     const [screen, setScreen] = useState('welcome');
-    const [sourceLanguage, setSourceLanguage] = useState('Italian');
-    const [targetLanguage, setTargetLanguage] = useState('English');
+    const [sourceLanguage, setSourceLanguage] = useState('English');
+    const [targetLanguage, setTargetLanguage] = useState('Hindi');
     const [inputText, setInputText] = useState('');
     const [translatedText, setTranslatedText] = useState('');
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -52,10 +55,58 @@ const AiTranslator = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showHistory, setShowHistory] = useState(false);
     const [translationHistory, setTranslationHistory] = useState([]);
+    const insets = useSafeAreaInsets();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(height)).current;
     const languages = [
-        'Arabic', 'Bengali', 'Chinese', 'Dutch', 'English', 'French', 'German', 'Hindi', 'Italian', 'Japanese',
-        'Korean', 'Malay', 'Portuguese', 'Russian', 'Spanish', 'Swahili', 'Thai', 'Turkish', 'Urdu', 'Vietnamese'
+        'Arabic', 'Sanskrit', 'Bengali', 'Chinese', 'Dutch', 'English', 'French', 'German', 'Hindi', 'Italian', 'Japanese',
+        'Korean', 'Malay', 'Portuguese', 'Russian', 'Spanish', 'Swahili', 'Thai', 'Turkish', 'Urdu', 'Vietnamese',
+    
+        // Indian Languages
+        'Assamese', 'Bhojpuri', 'Dogri', 'Gujarati', 'Kannada', 'Kashmiri', 'Konkani', 'Maithili', 'Malayalam', 'Manipuri', 
+        'Marathi', 'Nepali', 'Odia', 'Punjabi', 'Rajasthani', 'Sindhi', 'Tamil', 'Telugu', 'Tulu', 'Bodo', 'Santali', 
+        'Bhili', 'Mizo', 'Khasi', 'Garo', 'Meitei', 'Sikkimese', 'Lepcha', 'Nagamese', 'Pahari', 'Chhattisgarhi', 'Haryanvi', 
+        'Magahi', 'Awadhi', 'Garhwali', 'Braj Bhasha', 'Sourashtra', 'Ladakhi',
+    
+        // Other Asian and African Languages
+        'Amharic', 'Armenian', 'Azerbaijani', 'Burmese', 'Georgian', 'Hebrew', 'Indonesian', 'Kazakh', 'Kurdish', 'Lao', 
+        'Mongolian', 'Pashto', 'Sinhala', 'Tagalog', 'Tajik', 'Tibetan', 'Turkmen', 'Uzbek', 'Xhosa', 'Yoruba', 'Zulu', 
+        'Somali', 'Igbo', 'Shona', 'Fula', 'Hausa',
+    
+        // European and Slavic Languages
+        'Albanian', 'Basque', 'Bosnian', 'Bulgarian', 'Catalan', 'Croatian', 'Czech', 'Danish', 'Estonian', 'Finnish', 
+        'Greek', 'Hungarian', 'Icelandic', 'Irish', 'Latvian', 'Lithuanian', 'Macedonian', 'Maltese', 'Norwegian', 
+        'Polish', 'Romanian', 'Serbian', 'Slovak', 'Slovenian', 'Swedish', 'Ukrainian', 'Welsh',
+    
+        // Native American and Other Global Languages
+        'Aymara', 'Guarani', 'Haitian Creole', 'Hawaiian', 'Inuktitut', 'Mayan', 'Navajo', 'Quechua', 'Tupi', 'Mapudungun',
+    
+        // Others
+        'Esperanto', 'Samoan', 'Maori', 'Fijian', 'Tongan', 'Tok Pisin', 'Bislama', 'Palauan', 'Chamorro'
     ];
+    
+
+
+    const animateIn = () => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.spring(slideAnim, {
+                toValue: 0,
+                tension: 20,
+                friction: 7,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    useEffect(() => {
+        animateIn();
+    }, [screen]);
+
 
     const storeShowDemoStatus = async (value) => {
         try {
@@ -75,13 +126,7 @@ const AiTranslator = ({ navigation }) => {
         }
     };
 
-    useEffect(() => {
-        const initializeApp = async () => {
-            const demoStatus = await getShowDemoStatus();
-            setShowDemo(demoStatus);
-        };
-        initializeApp();
-    }, []);
+
 
     const handleDemoFinish = () => {
         setShowDemo(false);
@@ -92,7 +137,16 @@ const AiTranslator = ({ navigation }) => {
         lang.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+
+
     useEffect(() => {
+        const initializeApp = async () => {
+            const demoStatus = await getShowDemoStatus();
+            setShowDemo(demoStatus);
+        };
+        initializeApp();
+
+
         Tts.setDefaultLanguage('en-US');
         Tts.setDefaultVoice('com.apple.ttsbundle.Samantha-compact');
 
@@ -155,7 +209,7 @@ const AiTranslator = ({ navigation }) => {
 
     const copyToClipboard = (text) => {
         Clipboard.setString(text);
-        Alert.alert('Copied', 'Text copied to clipboard');
+        // Alert.alert('Copied', 'Text copied to clipboard');
     };
 
 
@@ -178,12 +232,14 @@ const AiTranslator = ({ navigation }) => {
 
 
     const extractTextFromImage = async (base64Image) => {
+        // console.log("extractTextFromImage")
         setIsLoading(true);
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
             const prompt = "Extract and return only the text visible in this image. If there's no text, respond with 'No text found in the image.'"
-
+            //    console.log(prompt+ "base64  "+base64Image)
             const result = await model.generateContent([
                 prompt,
                 { inlineData: { data: base64Image, mimeType: 'image/jpeg' } },
@@ -195,7 +251,7 @@ const AiTranslator = ({ navigation }) => {
             setScannedText(extractedText);
         } catch (error) {
             console.error('Error in extractTextFromImage function:', error);
-            setObjectInfo({ error: 'Unexpected error. Please try again.' });
+            // setObjectInfo({ error: 'Unexpected error. Please try again.' });
         } finally {
             setIsLoading(false);
         }
@@ -280,6 +336,7 @@ const AiTranslator = ({ navigation }) => {
         if (isRecording) {
             try {
                 await Voice.stop();
+                console.log("Vice stopped" + sourceLanguage)
                 setIsRecording(false);
                 stopAnimation();
             } catch (e) {
@@ -288,6 +345,7 @@ const AiTranslator = ({ navigation }) => {
         } else {
             try {
                 await Voice.start(sourceLanguage);
+                console.log("Vice started" + sourceLanguage)
                 setIsRecording(true);
                 startAnimation();
             } catch (e) {
@@ -321,6 +379,10 @@ const AiTranslator = ({ navigation }) => {
         const options = {
             mediaType: 'photo',
             includeBase64: false,
+            cropping: true, 
+            freeStyleCropEnabled: true,
+            cropperCircleOverlay: false, 
+            cropperToolbarTitle: 'Crop Image',
             maxHeight: 2000,
             maxWidth: 2000,
         };
@@ -365,7 +427,7 @@ const AiTranslator = ({ navigation }) => {
             console.error('Error saving translation history:', e);
         }
     };
-    
+
     const loadTranslationHistory = async () => {
         try {
             const history = await AsyncStorage.getItem('@translationHistory');
@@ -376,7 +438,7 @@ const AiTranslator = ({ navigation }) => {
             console.error('Error loading translation history:', e);
         }
     };
-    
+
     const clearTranslationHistory = async () => {
         try {
             await AsyncStorage.removeItem('@translationHistory');
@@ -386,7 +448,7 @@ const AiTranslator = ({ navigation }) => {
             console.error('Error clearing translation history:', e);
         }
     };
-    
+
     useEffect(() => {
         loadTranslationHistory();
     }, []);
@@ -406,21 +468,21 @@ const AiTranslator = ({ navigation }) => {
 
     const Header = ({ title, onBackPress, onMenuPress }) => {
         const [showMenu, setShowMenu] = useState(false);
-    
+
         const handleMenuPress = (action) => {
             setShowMenu(false);
             onMenuPress(action);
         };
-    
+
         return (
             <SafeAreaView style={styles.headerContainer}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={onBackPress}>
-                        <Icon name="arrow-back" size={24} color="#FFFFFF" />
+                        <Icon name="arrow-back" size={24} color="black" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>{title}</Text>
                     <TouchableOpacity onPress={() => setShowMenu(true)}>
-                        <Icon name="more-vert" size={24} color="#FFFFFF" />
+                        <Icon name="more-vert" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
                 <ModalMenu
@@ -434,43 +496,91 @@ const AiTranslator = ({ navigation }) => {
     };
 
     const HistoryScreen = ({ onClose }) => {
+        const fadeAnim = useRef(new Animated.Value(0)).current;
+        const slideAnim = useRef(new Animated.Value(height)).current;
+    
+        useEffect(() => {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    tension: 20,
+                    friction: 7,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        }, []);
+    
+        const renderHistoryItem = ({ item }) => (
+            <LinearGradient
+                colors={['#4A90E2', '#50E3C2']}
+                style={styles.historyItem}
+            >
+                <View style={styles.historyItemHeader}>
+                    <Icon
+                        name={item.type === 'text' ? 'edit' : item.type === 'voice' ? 'mic' : 'image'}
+                        size={24}
+                        color="#FFF"
+                    />
+                    <Text style={styles.historyItemDate}>
+                        {new Date(item.timestamp).toLocaleString()}
+                    </Text>
+                </View>
+                <View style={styles.historyItemContent}>
+                    <Text style={styles.historyItemOriginal}>{item.originalText}</Text>
+                    <Icon name="arrow-downward" size={24} color="#FFF" />
+                    <Text style={styles.historyItemTranslated}>{item.translatedText}</Text>
+                </View>
+                <View style={styles.historyItemActions}>
+                    <TouchableOpacity onPress={() => copyToClipboard(item.translatedText)}>
+                        <Icon name="content-copy" size={24} color="#FFF" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => speakTranslatedText(item.translatedText)}>
+                        <Icon name="volume-up" size={24} color="#FFF" />
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
+        );
+    
         return (
             <SafeAreaView style={styles.historyContainer}>
-                <Header 
-                    title="Translation History" 
+                <Header
+                    title="Translation History"
                     onBackPress={onClose}
                     onMenuPress={() => {}}
                 />
-                <FlatList
-                    data={translationHistory}
-                    renderItem={({ item }) => (
-                        <View style={styles.historyItem}>
-                            <View style={styles.historyItemHeader}>
-                                <Icon name={item.type === 'text' ? 'edit' : item.type === 'voice' ? 'mic' : 'image'} size={24} color="#4A90E2" />
-                                <Text style={styles.historyItemDate}>{new Date(item.timestamp).toLocaleString()}</Text>
-                            </View>
-                            <View style={styles.historyItemContent}>
-                                <Text style={styles.historyItemOriginal}>{item.originalText}</Text>
-                                <Icon name="arrow-downward" size={24} color="#4A90E2" />
-                                <Text style={styles.historyItemTranslated}>{item.translatedText}</Text>
-                            </View>
-                            <View style={styles.historyItemActions}>
-                                <TouchableOpacity onPress={() => copyToClipboard(item.translatedText)}>
-                                    <Icon name="content-copy" size={24} color="#4A90E2" />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => speakTranslatedText(item.translatedText)}>
-                                    <Icon name="volume-up" size={24} color="#4A90E2" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    contentContainerStyle={styles.historyList}
-                />
-                <TouchableOpacity style={styles.clearHistoryButton} onPress={clearTranslationHistory}>
-                    <Icon name="delete" size={24} color="#fff" />
-                    <Text style={styles.clearHistoryButtonText}>Clear History</Text>
-                </TouchableOpacity>
+                <Animated.View
+                    style={[
+                        styles.historyContent,
+                        {
+                            opacity: fadeAnim,
+                            transform: [{ translateY: slideAnim }],
+                        },
+                    ]}
+                >
+                    <FlatList
+                        data={translationHistory}
+                        renderItem={renderHistoryItem}
+                        keyExtractor={(item) => item.id.toString()}
+                        contentContainerStyle={styles.historyList}
+                    />
+                    <TouchableOpacity
+                        style={styles.clearHistoryButton}
+                        onPress={clearTranslationHistory}
+                    >
+                        <LinearGradient
+                            colors={['#FF3B30', '#FF9500']}
+                            style={styles.clearHistoryButtonGradient}
+                        >
+                            <Icon name="delete" size={24} color="#FFF" />
+                            <Text style={styles.clearHistoryButtonText}>Clear History</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </Animated.View>
             </SafeAreaView>
         );
     };
@@ -482,103 +592,12 @@ const AiTranslator = ({ navigation }) => {
             navigation.navigate("Dashboard");
         }
     };
+   
     const renderWelcomeScreen = () => (
-        <SafeAreaView style={styles.welcomeContainer}>
-            <Text style={styles.title}>Translator</Text>
-            <Text style={styles.subtitle}>Translate easy and fast into 100+ languages</Text>
-            <View style={styles.avatarContainer}>
-                <View style={styles.avatarBubble}>
-                    <Text style={styles.avatarText}>Hola</Text>
-                    <View style={[styles.avatar, styles.avatar1]} />
-                </View>
-                <View style={styles.avatarBubble}>
-                    <Text style={styles.avatarText}>Hello</Text>
-                    <View style={[styles.avatar, styles.avatar2]} />
-                </View>
-                <View style={styles.avatarBubble}>
-                    <Text style={styles.avatarText}>Ciao</Text>
-                    <View style={[styles.avatar, styles.avatar3]} />
-                </View>
-            </View>
-            <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-                <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
+        <WelcomeScreen onContinue={handleContinue} />
     );
 
-    const renderTranslateScreen = () => (
-        <SafeAreaView style={styles.translateContainer}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.keyboardAvoidingView}
-            >
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <Text style={styles.headerTitle}>Text Translator</Text>
-                    <View style={styles.card}>
-                        <View style={styles.languageSelector}>
-                            <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('source')}>
-                                <Text style={styles.dropdownText}>{sourceLanguage}</Text>
-                                <Icon name="arrow-drop-down" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter text"
-                            value={inputText}
-                            onChangeText={setInputText}
-                            multiline
-                        />
-                    </View>
-                    <View style={styles.card}>
-                        <View style={styles.languageSelector}>
-                            <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
-                                <Text style={styles.dropdownText}>{targetLanguage}</Text>
-                                <Icon name="arrow-drop-down" size={24} color="#333" />
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.speakerButton} onPress={speakTranslatedText}>
-                                <Icon name="volume-up" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-
-                        {isLoading ? (
-                            <ActivityIndicator size="large" color="#333" />
-                        ) : error ? (
-                            <Text style={styles.errorText}>{error}</Text>
-                        ) : (
-                            <Text style={styles.translatedText}>{translatedText || "Translated text will appear here..."}</Text>
-                        )}
-                    </View>
-                    <TouchableOpacity style={styles.translateButton} onPress={e => handleTranslate(inputText)}>
-                        <Text style={styles.translateButtonText}>Translate</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-            </KeyboardAvoidingView>
-            {renderBottomButtons('translate')}
-            {isDropdownVisible && (
-                <View style={styles.dropdownListContainer}>
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search languages..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    <FlatList
-                        data={filteredLanguages}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={styles.dropdownItem}
-                                onPress={() => selectLanguage(item)}
-                            >
-                                <Text style={styles.dropdownItemText}>{item}</Text>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={(item) => item}
-                    />
-                </View>
-            )}
-        </SafeAreaView>
-    );
+    
 
 
     const handleVoiceTranslate = async (recordedText) => {
@@ -599,6 +618,89 @@ const AiTranslator = ({ navigation }) => {
             setIsLoading(false);
         }
     };
+
+    const renderDropdownList = () => (
+        <View style={styles.dropdownListContainer}>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Search languages..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+            />
+            <FlatList
+                data={filteredLanguages}
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                        style={styles.dropdownItem}
+                        onPress={() => selectLanguage(item)}
+                    >
+                        <Text style={styles.dropdownItemText}>{item}</Text>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item}
+            />
+        </View>
+    );
+    
+    const renderTranslateScreen = () => (
+        <Animated.View style={[styles.translateContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.keyboardAvoidingView}
+            >
+                <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                    <LinearGradient colors={['#4A90E2', '#50E3C2']} style={styles.card}>
+                        <View style={styles.languageSelector}>
+                            <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('source')}>
+                                <Text style={styles.dropdownText}>{sourceLanguage}</Text>
+                                <Icon name="arrow-drop-down" size={24} color="#FFF" />
+                            </TouchableOpacity>
+                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter text"
+                            placeholderTextColor="#8EBBFF"
+                            value={inputText}
+                            onChangeText={setInputText}
+                            multiline
+                        />
+                    </LinearGradient>
+                    <LinearGradient colors={['#50E3C2', '#4A90E2']} style={styles.card}>
+                        <View style={styles.languageSelector}>
+                            <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
+                                <Text style={styles.dropdownText}>{targetLanguage}</Text>
+                                <Icon name="arrow-drop-down" size={24} color="#FFF" />
+                            </TouchableOpacity>
+                        </View>
+    
+                        {isLoading ? (
+                            <ActivityIndicator size="large" color="#FFF" />
+                        ) : error ? (
+                            <Text style={styles.errorText}>{error}</Text>
+                        ) : (
+                            <Animated.View style={[styles.translatedCard, { opacity: fadeAnim }]}>
+                                <Text style={styles.translatedText}>{translatedText || "Translated text will appear here..."}</Text>
+                                <View style={styles.cardIconsContainer}>
+                                    <TouchableOpacity style={styles.cardIcon} onPress={speakTranslatedText}>
+                                        <Icon name="volume-up" size={24} color="#FFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cardIcon} onPress={() => copyToClipboard(translatedText)}>
+                                        <Icon name="content-copy" size={24} color="#FFF" />
+                                    </TouchableOpacity>
+                                </View>
+                            </Animated.View>
+                        )}
+                    </LinearGradient>
+                    <TouchableOpacity style={styles.translateButton} onPress={() => handleTranslate(inputText)}>
+                        <Text style={styles.translateButtonText}>Translate</Text>
+                        <Icon name="translate" size={24} color="#FFF" style={styles.translateIcon} />
+                    </TouchableOpacity>
+                </ScrollView>
+            </KeyboardAvoidingView>
+            {renderBottomButtons('translate')}
+            {isDropdownVisible && renderDropdownList()}
+        </Animated.View>
+    );
     
     const renderRecordScreen = () => (
         <SafeAreaView style={styles.recordContainer}>
@@ -607,26 +709,27 @@ const AiTranslator = ({ navigation }) => {
                 style={styles.keyboardAvoidingView}
             >
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View style={styles.card}>
+                    <LinearGradient colors={['#4A90E2', '#50E3C2']} style={styles.card}>
                         <View style={styles.languageSelector}>
                             <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('source')}>
                                 <Text style={styles.dropdownText}>{sourceLanguage}</Text>
-                                <Icon name="arrow-drop-down" size={24} color="#333" />
+                                <Icon name="arrow-drop-down" size={24} color="#FFF" />
                             </TouchableOpacity>
-                            <Icon name="compare-arrows" size={24} color="#333" />
+                            <Icon name="compare-arrows" size={24} color="#FFF" />
                             <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
                                 <Text style={styles.dropdownText}>{targetLanguage}</Text>
-                                <Icon name="arrow-drop-down" size={24} color="#333" />
+                                <Icon name="arrow-drop-down" size={24} color="#FFF" />
                             </TouchableOpacity>
                         </View>
-                    </View>
-                    <View style={[styles.card, styles.waveformCard]}>
+                    </LinearGradient>
+                    <LinearGradient colors={['#50E3C2', '#4A90E2']} style={[styles.card, styles.waveformCard]}>
                         <TextInput
-                            style={styles.recordedTextInput}
+                            style={styles.input}
                             value={recordedText}
                             onChangeText={setRecordedText}
                             multiline
                             placeholder="Recorded text will appear here..."
+                            placeholderTextColor="#8EBBFF"
                         />
                         <Animated.View style={[styles.recordButtonContainer, { transform: [{ scale: animatedValue }] }]}>
                             <TouchableOpacity
@@ -636,59 +739,38 @@ const AiTranslator = ({ navigation }) => {
                                 <Icon name={isRecording ? "stop" : "mic"} size={24} color="#fff" />
                             </TouchableOpacity>
                         </Animated.View>
-                    </View>
+                    </LinearGradient>
                     <TouchableOpacity
                         style={styles.translateButton}
                         onPress={() => handleVoiceTranslate(recordedText)}
                     >
                         <Text style={styles.translateButtonText}>Translate</Text>
+                        <Icon name="translate" size={24} color="#fff" style={styles.translateIcon} />
                     </TouchableOpacity>
-                    <View style={[styles.card, styles.translatedCard]}>
+                    <LinearGradient colors={['#4A90E2', '#50E3C2']} style={[styles.card, styles.translatedCard]}>
                         {isLoading ? (
-                            <ActivityIndicator size="large" color="#4A90E2" />
+                            <ActivityIndicator size="large" color="#FFF" />
                         ) : (
                             <>
                                 <Text style={styles.translatedText}>{translatedText || "Translated text will appear here..."}</Text>
                                 <View style={styles.cardIconsContainer}>
                                     <TouchableOpacity style={styles.cardIcon} onPress={speakTranslatedText}>
-                                        <Icon name="volume-up" size={24} color="#4A90E2" />
+                                        <Icon name="volume-up" size={24} color="#FFF" />
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cardIcon} onPress={() => copyToClipboard(translatedText)}>
-                                        <Icon name="content-copy" size={24} color="#4A90E2" />
+                                        <Icon name="content-copy" size={24} color="#FFF" />
                                     </TouchableOpacity>
                                 </View>
                             </>
                         )}
-                    </View>
+                    </LinearGradient>
                 </ScrollView>
             </KeyboardAvoidingView>
             {renderBottomButtons('record')}
-            {isDropdownVisible && (
-                <View style={styles.dropdownListContainer}>
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search languages..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    <FlatList
-                        data={filteredLanguages}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={styles.dropdownItem}
-                                onPress={() => selectLanguage(item)}
-                            >
-                                <Text style={styles.dropdownItemText}>{item}</Text>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={(item) => item}
-                    />
-                </View>
-            )}
+            {isDropdownVisible && renderDropdownList()}
         </SafeAreaView>
     );
-
-
+    
     const renderScanScreen = () => (
         <SafeAreaView style={styles.scanContainer}>
             <KeyboardAvoidingView
@@ -696,8 +778,7 @@ const AiTranslator = ({ navigation }) => {
                 style={styles.keyboardAvoidingView}
             >
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <Text style={styles.headerTitle}>Image Translator</Text>
-                    <View style={[styles.card, styles.imagePickerCard]}>
+                    <LinearGradient colors={['#4A90E2', '#50E3C2']} style={[styles.card, styles.imagePickerCard]}>
                         <View style={styles.imagePickerCardButton}>
                             <TouchableOpacity style={styles.imagePickerButton} onPress={() => handleImagePick('gallery')}>
                                 <Icon name="photo-library" size={40} color="#4A90E2" />
@@ -710,22 +791,27 @@ const AiTranslator = ({ navigation }) => {
                         </View>
                         {image ? (
                             <Image source={{ uri: image }} style={styles.selectedImage} />
-                        ) : (<></>)}
-                    </View>
-                    <View style={styles.card}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Extracted text will appear here..."
-                            value={scannedText}
-                            onChangeText={setScannedText}
-                            multiline
-                        />
-                    </View>
+                        ) : null}
+                    </LinearGradient>
+                    {isLoading ? (
+                        <ActivityIndicator size="large" color="#4A90E2" />
+                    ) : (
+                        <LinearGradient colors={['#50E3C2', '#4A90E2']} style={styles.card}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Extracted text will appear here..."
+                                value={scannedText}
+                                onChangeText={setScannedText}
+                                multiline
+                                placeholderTextColor="#8EBBFF"
+                            />
+                        </LinearGradient>
+                    )}
                     <View style={styles.translationContainer}>
-                        <View style={styles.languageSelector}>
+                        <View style={styles.languageSelectorImage}>
                             <TouchableOpacity style={styles.dropdown} onPress={() => toggleDropdown('target')}>
                                 <Text style={styles.dropdownText}>{targetLanguage}</Text>
-                                <Icon name="arrow-drop-down" size={24} color="#333" />
+                                <Icon name="arrow-drop-down" size={24} color="#4A90E2" />
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity
@@ -736,89 +822,62 @@ const AiTranslator = ({ navigation }) => {
                             <Icon name="translate" size={24} color="#fff" style={styles.translateIcon} />
                         </TouchableOpacity>
                     </View>
-                    <View style={[styles.card, styles.translatedCard]}>
-                        {isLoading ? (
-                            <ActivityIndicator size="large" color="#4A90E2" />
-                        ) : (
-                            <>
-                                <Text style={styles.translatedText}>{translatedText || "Translated text will appear here..."}</Text>
-                                <View style={styles.cardIconsContainer}>
-                                    <TouchableOpacity style={styles.cardIcon} onPress={speakTranslatedText}>
-                                        <Icon name="volume-up" size={24} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cardIcon} onPress={() => copyToClipboard(translatedText)}>
-                                        <Icon name="content-copy" size={24} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
-                    </View>
+                    <LinearGradient colors={['#4A90E2', '#50E3C2']} style={[styles.card, styles.translatedCard]}>
+                        <Text style={styles.translatedText}>{translatedText || "Translated text will appear here..."}</Text>
+                        <View style={styles.cardIconsContainer}>
+                            <TouchableOpacity style={styles.cardIcon} onPress={speakTranslatedText}>
+                                <Icon name="volume-up" size={24} color="#FFF" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.cardIcon} onPress={() => copyToClipboard(translatedText)}>
+                                <Icon name="content-copy" size={24} color="#FFF" />
+                            </TouchableOpacity>
+                        </View>
+                    </LinearGradient>
                 </ScrollView>
             </KeyboardAvoidingView>
             {renderBottomButtons('scan')}
-            {isDropdownVisible && (
-                <View style={styles.dropdownListContainer}>
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search languages..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    <FlatList
-                        data={filteredLanguages}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={styles.dropdownItem}
-                                onPress={() => selectLanguage(item)}
-                            >
-                                <Text style={styles.dropdownItemText}>{item}</Text>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={(item) => item}
-                    />
-                </View>
-            )}
+            {isDropdownVisible && renderDropdownList()}
         </SafeAreaView>
     );
 
 
     const renderBottomButtons = (activeScreen) => (
-        <View style={styles.buttonContainer}>
+        <Animated.View style={[styles.buttonContainer, { transform: [{ translateY: slideAnim }] }]}>
             <TouchableOpacity
                 style={[styles.button, activeScreen === 'translate' && styles.activeButton]}
                 onPress={() => setScreen('translate')}
             >
-                <Icon name="edit" size={24} color={activeScreen === 'translate' ? "#fff" : "#4A90E2"} />
+                <Icon name="edit" size={24} color={activeScreen === 'translate' ? "#FFF" : "#4A90E2"} />
                 <Text style={[styles.buttonText, activeScreen === 'translate' && styles.activeButtonText]}>Write</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.button, activeScreen === 'record' && styles.activeButton]}
                 onPress={() => setScreen('record')}
             >
-                <Icon name="mic" size={24} color={activeScreen === 'record' ? "#fff" : "#4A90E2"} />
+                <Icon name="mic" size={24} color={activeScreen === 'record' ? "#FFF" : "#4A90E2"} />
                 <Text style={[styles.buttonText, activeScreen === 'record' && styles.activeButtonText]}>Record</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.button, activeScreen === 'scan' && styles.activeButton]}
                 onPress={() => setScreen('scan')}
             >
-                <Icon name="camera-alt" size={24} color={activeScreen === 'scan' ? "#fff" : "#4A90E2"} />
+                <Icon name="camera-alt" size={24} color={activeScreen === 'scan' ? "#FFF" : "#4A90E2"} />
                 <Text style={[styles.buttonText, activeScreen === 'scan' && styles.activeButtonText]}>Scan</Text>
             </TouchableOpacity>
-        </View>
+        </Animated.View>
     );
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         {renderDemoStep()}
         {showHistory ? (
             <HistoryScreen onClose={() => setShowHistory(false)} />
         ) : (
             <>
                 <Header
-                    title={screen === 'welcome' ? 'Welcome' : 
-                           screen === 'translate' ? 'Text Translator' : 
-                           screen === 'record' ? 'Voice Translator' : 'Image Translator'}
+                    title={screen === 'welcome' ? 'Welcome' :
+                        screen === 'translate' ? 'Text Translator' :
+                            screen === 'record' ? 'Voice Translator' : 'Image Translator'}
                     onBackPress={handleBackPress}
                     onMenuPress={handleMenuPress}
                 />
@@ -828,43 +887,50 @@ const AiTranslator = ({ navigation }) => {
                 {screen === 'scan' && renderScanScreen()}
             </>
         )}
-    </View>
-);
+    </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f7f020',
+        backgroundColor: '#F0F8FF',
     },
     headerContainer: {
-        backgroundColor: '#4A90E2',
+        backgroundColor: '#FFF',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 6,
+        padding: 16,
     },
     headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
+        fontSize: 24,
+        fontWeight: '900',
+        color: '#4A90E2',
     },
     menuDropdown: {
-    position: 'absolute',
-    top: 60,
-    right: 10,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    zIndex: 1000, // Add this line to ensure it's above other elements
-  },
+        position: 'absolute',
+        top: 60,
+        right: 10,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        padding: 10,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        zIndex: 1000, // Add this line to ensure it's above other elements
+    },
     menuItem: {
         padding: 10,
     },
@@ -874,14 +940,17 @@ const styles = StyleSheet.create({
     },
     historyContainer: {
         flex: 1,
-        backgroundColor: '#f7f7f7',
+        backgroundColor: '#61d5ea',
+    },
+    historyContent: {
+        flex: 1,
+        padding: 20,
     },
     historyList: {
-        padding: 15,
+        paddingBottom: 20,
     },
     historyItem: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
+        borderRadius: 15,
         padding: 15,
         marginBottom: 15,
         elevation: 3,
@@ -898,21 +967,21 @@ const styles = StyleSheet.create({
     },
     historyItemDate: {
         fontSize: 12,
-        color: '#888',
+        color: '#FFF',
     },
     historyItemContent: {
         borderLeftWidth: 2,
-        borderLeftColor: '#4A90E2',
+        borderLeftColor: '#FFF',
         paddingLeft: 10,
     },
     historyItemOriginal: {
         fontSize: 16,
-        color: '#333',
+        color: '#FFF',
         marginBottom: 5,
     },
     historyItemTranslated: {
         fontSize: 16,
-        color: '#4A90E2',
+        color: '#FFF',
         fontWeight: 'bold',
     },
     historyItemActions: {
@@ -921,16 +990,18 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     clearHistoryButton: {
+        marginTop: 20,
+        overflow: 'hidden',
+        borderRadius: 25,
+    },
+    clearHistoryButtonGradient: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FF3B30',
         padding: 15,
-        borderRadius: 25,
-        margin: 20,
     },
     clearHistoryButtonText: {
-        color: '#fff',
+        color: '#FFF',
         fontSize: 16,
         fontWeight: 'bold',
         marginLeft: 10,
@@ -941,19 +1012,23 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     cardIcon: {
-        padding: 5,
+        padding: 10,
         marginLeft: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 20,
     },
     translatedCard: {
         minHeight: 150,
         position: 'relative',
-        backgroundColor: '#F0F8FF', // Light blue background for translated text
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 15,
+        padding: 15,
     },
     translatedText: {
-        color: '#333',
+        color: '#FFF',
         minHeight: 100,
-        fontSize: 16,
-        lineHeight: 24,
+        fontSize: 18,
+        lineHeight: 26,
     },
     welcomeContainer: {
         flex: 1,
@@ -976,7 +1051,7 @@ const styles = StyleSheet.create({
     scrollViewContent: {
         flexGrow: 1,
         padding: 20,
-        paddingBottom: 100, // Extra padding for bottom buttons
+        paddingBottom: 100,
     },
     title: {
         fontSize: 32,
@@ -1022,19 +1097,12 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 15,
     },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: '900',
-        color: 'white',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
+
     card: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 15,
+        borderRadius: 20,
+        padding: 20,
         marginBottom: 20,
-        elevation: 3,
+        elevation: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -1045,19 +1113,34 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
+       
+    },
+    languageSelectorImage:{
+        backgroundColor: '#4A90E2',
+        borderRadius: 25,
+        marginBottom: 20,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     dropdown: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#E1E8ED',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         padding: 10,
         borderRadius: 20,
         minWidth: 120,
     },
     dropdownText: {
-        color: '#4A90E2',
+        color: '#FFF',
         marginRight: 5,
-        fontWeight: '900'
+        fontWeight: '900',
+        fontSize: 16,
     },
     dropdownList: {
         position: 'absolute',
@@ -1081,12 +1164,10 @@ const styles = StyleSheet.create({
     input: {
         minHeight: 100,
         textAlignVertical: 'top',
-        color: '#333',
+        color: '#FFF',
+        fontSize: 18,
+        
     },
-    // translatedText: {
-    //     color: '#333',
-    //     minHeight: 100,
-    // },
     errorText: {
         color: '#FF3B30',
         textAlign: 'center',
@@ -1118,7 +1199,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     translateButton: {
-        backgroundColor: '#059ffc',
+        backgroundColor: '#4A90E2',
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderRadius: 25,
@@ -1132,23 +1213,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    translateButtonText: {
+        color: '#FFF',
+        fontSize: 18,
+        fontWeight: '900',
+        marginRight: 10,
+    },
     translateIcon: {
         marginLeft: 10,
     },
-    translateButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: '900',
-        textAlign: 'center',
-    },
+
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         position: 'absolute',
-        bottom: 20,
+        bottom: 25,
         left: 20,
         right: 20,
-        backgroundColor: 'white',
+        backgroundColor: '#FFF',
         borderRadius: 30,
         padding: 10,
         elevation: 5,
@@ -1159,7 +1241,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        padding: 15,
+        padding: 10,
         borderRadius: 25,
         backgroundColor: '#F0F8FF',
     },
@@ -1173,7 +1255,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     activeButtonText: {
-        color: '#fff',
+        color: '#FFF',
     },
     waveformCard: {
         backgroundColor: 'white',
@@ -1238,13 +1320,13 @@ const styles = StyleSheet.create({
     //     minHeight: 150,
     //     position: 'relative',
     // },
-  imagePickerCard: {
+    imagePickerCard: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
         minHeight: 200,
-        backgroundColor: '#F0F8FF',
+        backgroundColor: 'white',
     },
     imagePickerCardButton: {
         flexDirection: 'row',
